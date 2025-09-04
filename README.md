@@ -1,42 +1,42 @@
-# 🚀 Enhanced Expense Tracker Dashboard
+# Enhanced Expense Tracker Dashboard
 
 A modern, feature-rich finance dashboard with expense tracking, analytics, and budget management built with React, Tailwind CSS, and Framer Motion.
 
-## ✨ Features
+##       Features
 
-### 🎯 Core Functionality
+###  Core Functionality
 - **Expense & Income Tracking**: Add, edit, and delete financial transactions
 - **Category Management**: Organize transactions by custom categories
 - **Real-time Analytics**: Visual charts and insights into spending patterns
 - **Budget Management**: Set monthly budgets with progress tracking
 - **Dark/Light Theme**: Toggle between themes for comfortable viewing
 
-### 🔄 Advanced Features
+###  Advanced Features
 - **Recurring Transactions**: Set up automatic recurring bills and income
 - **Savings Goals**: Track progress toward financial objectives
 - **Multi-Account Support**: Manage multiple bank accounts and balances
 - **Multi-Currency Support**: Handle different currencies (USD, EUR, GBP, JPY, CAD)
 - **Smart Notifications**: Budget alerts and transaction confirmations
 
-### 📊 Enhanced Analytics
+###  Enhanced Analytics
 - **Spending Trends**: 7-day spending patterns with line charts
 - **Category Breakdown**: Pie charts showing expense distribution
 - **Top Categories**: Ranked spending analysis
 - **Account Balances**: Real-time account balance tracking
 
-### 🛠️ Data Management
+###   Data Management
 - **Export/Import**: JSON and CSV data export/import functionality
 - **Backup & Restore**: Automatic local storage with manual backup options
 - **Data Analytics**: Comprehensive data insights and statistics
 - **Privacy First**: All data stored locally, no external services
 
-### 📱 User Experience
+###  User Experience
 - **Responsive Design**: Mobile-first approach with touch-friendly interface
 - **Smooth Animations**: Framer Motion powered transitions
 - **Keyboard Shortcuts**: Quick actions for power users
 - **Accessibility**: High contrast and screen reader support
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 - Node.js 16+ 
@@ -45,7 +45,7 @@ A modern, feature-rich finance dashboard with expense tracking, analytics, and b
 ### Installation
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone expense-tracker
 cd expenseProj
 
 # Install dependencies
@@ -65,7 +65,7 @@ npm run build
 4. **Recurring Items**: Set up automatic recurring transactions
 5. **Export Data**: Use the Data Manager to backup your financial data
 
-## 🏗️ Architecture
+##  Architecture
 
 ### Tech Stack
 - **Frontend**: React 18 with Hooks
@@ -100,7 +100,7 @@ src/
 - **Real-time Updates**: Automatic data synchronization
 - **State Sharing**: Props drilling for component communication
 
-## 🎨 Customization
+##  Customization
 
 ### Themes
 - **Light Mode**: Clean, professional appearance
@@ -113,7 +113,7 @@ src/
 - **Responsive Breakpoints**: Mobile, tablet, and desktop layouts
 - **Animation Classes**: Predefined motion utilities
 
-## 📱 Responsive Design
+##  Responsive Design
 
 ### Breakpoints
 - **Mobile**: 320px - 768px (single column layout)
@@ -126,7 +126,7 @@ src/
 - Optimized spacing for small screens
 - Collapsible sections for better UX
 
-## 🔒 Security & Privacy
+##  Security & Privacy
 
 ### Data Storage
 - **Local Storage**: All data stored in browser
@@ -140,7 +140,7 @@ src/
 - No third-party services
 - Complete user control
 
-## 🚀 Performance
+##  Performance
 
 ### Optimization
 - **Lazy Loading**: Components load on demand
@@ -154,7 +154,7 @@ src/
 - **Cumulative Layout Shift**: < 0.1
 - **First Input Delay**: < 100ms
 
-## 🧪 Testing
+##  Testing
 
 ### Test Coverage
 - **Unit Tests**: Component functionality testing
@@ -168,7 +168,7 @@ src/
 - **TypeScript**: Type safety (optional)
 - **Performance Monitoring**: Bundle size and runtime metrics
 
-## 📈 Roadmap
+##  Roadmap
 
 ### Upcoming Features
 - **Cloud Sync**: Optional cloud backup and sync
@@ -183,7 +183,7 @@ src/
 - **API Integration**: Bank account connectivity
 - **Advanced Analytics**: Machine learning insights
 
-## 🤝 Contributing
+##  Contributing
 
 ### Development Setup
 1. Fork the repository
@@ -198,11 +198,11 @@ src/
 - Maintain consistent formatting
 - Write comprehensive documentation
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - **React Team**: For the amazing framework
 - **Tailwind CSS**: For the utility-first CSS framework
@@ -210,7 +210,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Recharts**: For beautiful data visualization
 - **Lucide**: For consistent iconography
 
-## 📞 Support
+##  Support
 
 - **Issues**: Report bugs via GitHub Issues
 - **Discussions**: Join community discussions
