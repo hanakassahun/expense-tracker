@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900 transition-colors duration-200;
+  }
+  
+  .dark body {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6;
+  }
+  
+  .card-hover {
+    @apply hover:shadow-md hover:scale-[1.02] transition-all duration-200;
+  }
+  
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-colors duration-200;
+  }
+  
+  .gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .glass-effect {
+    @apply backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border border-white/20 dark:border-gray-700/20;
+  }
+  
+  /* Color utilities for success, warning, danger, etc. */
+  .text-success-600 {
+    @apply text-green-600;
+  }
+  
+  .text-success-700 {
+    @apply text-green-700;
+  }
+  
+  .text-success-400 {
+    @apply text-green-400;
+  }
+  
+  .bg-success-50 {
+    @apply bg-green-50;
+  }
+  
+  .bg-success-900\/20 {
+    @apply bg-green-900/20;
+  }
+  
+  .text-danger-600 {
+    @apply text-red-600;
+  }
+  
+  .text-danger-700 {
+    @apply text-red-600;
+  }
+  
+  .text-danger-400 {
+    @apply text-red-400;
+  }
+  
+  .bg-danger-50 {
+    @apply bg-red-50;
+  }
+  
+  .bg-danger-900\/20 {
+    @apply bg-red-900/20;
+  }
+  
+  .text-warning-600 {
+    @apply text-yellow-600;
+  }
+  
+  .text-warning-500 {
+    @apply text-yellow-500;
+  }
+  
+  .bg-warning-50 {
+    @apply bg-yellow-50;
+  }
+  
+  .bg-warning-100 {
+    @apply bg-yellow-100;
+  }
+  
+  .bg-warning-900\/20 {
+    @apply bg-yellow-900/20;
+  }
+  
+  .text-primary-600 {
+    @apply text-blue-600;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
