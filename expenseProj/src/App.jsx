@@ -284,57 +284,52 @@ function App() {
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-200 ${darkMode ? 'dark' : ''}`}>
+    <div className={`min-h-screen transition-colors duration-200 font-sans ${darkMode ? 'dark' : ''}`}>
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <div className="gradient-bg p-2 rounded-lg">
+          <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-16 py-3 sm:py-0 gap-2 sm:gap-0">
+            <div className="flex items-center space-x-3 mb-2 sm:mb-0">
+              <div className="gradient-bg p-2 rounded-lg shadow-md">
                 <DollarSign className="h-6 w-6 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-2xl sm:text-xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight">
                 Finance Dashboard
               </h1>
             </div>
-            
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              {/* Mobile-first responsive buttons */}
+            <div className="flex items-center gap-1 sm:gap-2 md:gap-4 flex-wrap">
+              {/* Responsive action buttons */}
               <button
                 onClick={() => setShowRecurring(!showRecurring)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 title="Recurring Transactions"
               >
                 <Target className="h-5 w-5 text-blue-600" />
               </button>
-              
               <button
                 onClick={() => setShowGoals(!showGoals)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400"
                 title="Savings Goals"
               >
                 <TrendingUp className="h-5 w-5 text-green-600" />
               </button>
-              
               <button
                 onClick={() => setShowDataManager(!showDataManager)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400"
                 title="Data Management"
               >
                 <Download className="h-5 w-5 text-purple-600" />
               </button>
-              
               <button
                 onClick={() => setShowSettings(!showSettings)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400"
                 title="Settings"
               >
                 <Settings className="h-5 w-5 text-gray-600" />
               </button>
-              
               <button
                 onClick={() => setDarkMode(!darkMode)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 title="Toggle Theme"
               >
                 {darkMode ? (

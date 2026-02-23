@@ -35,13 +35,13 @@ const BudgetProgress = ({ budget, totalExpenses, onBudgetChange, formatCurrency 
   return (
     <motion.div 
       className="card card-hover"
-      whileHover={{ scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 300 }}
+      whileHover={{ scale: 1.03 }}
+      transition={{ type: "spring", stiffness: 250, damping: 20 }}
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
           <Target className="h-5 w-5 text-primary-600 mr-2" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 className="text-lg font-extrabold text-gray-900 dark:text-white tracking-tight">
             Monthly Budget
           </h3>
         </div>
@@ -72,7 +72,7 @@ const BudgetProgress = ({ budget, totalExpenses, onBudgetChange, formatCurrency 
       </div>
 
       {!isEditing ? (
-        <div className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="text-3xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">
           {formatCurrency(budget)}
         </div>
       ) : (
@@ -100,7 +100,7 @@ const BudgetProgress = ({ budget, totalExpenses, onBudgetChange, formatCurrency 
             className={`h-full ${getProgressColor(percentage)} rounded-full`}
             initial={{ width: 0 }}
             animate={{ width: `${percentage}%` }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
           />
         </div>
       </div>
