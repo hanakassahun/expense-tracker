@@ -43,13 +43,20 @@ const TransactionList = ({ transactions, onDelete, formatCurrency, accounts }) =
       >
         <div className="text-center py-10 sm:py-12">
           <div className="text-6xl mb-4">📊</div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 tracking-tight">
-            No transactions found
       const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this transaction?')) {
           onDelete(id);
         }
       };
+          <p className="text-gray-500 dark:text-gray-400 text-base">
+            Add some transactions to see them here, or adjust your filters.
+          </p>
+        </div>
+      </motion.div>
+    )
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 tracking-tight">
+            No transactions found
+          </h3>
           <p className="text-gray-500 dark:text-gray-400 text-base">
             Add some transactions to see them here, or adjust your filters.
           </p>
