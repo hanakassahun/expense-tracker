@@ -177,10 +177,15 @@ function App() {
     addNotification(`Added ${transaction.type}: ${transaction.description}`)
   }
 
-  const updateAccountBalance = (accountId, amount, type) => {
+  const updateAccountBalance = (accountId, amount, type, isDelete = false) => {
     setAccounts(prev => prev.map(account => {
       if (account.id === accountId) {
-        const change = type === 'income' ? amount : -amount
+        let change = 0;
+        if (type === 'income') {
+          change = isDelete ? -amount : amount;
+        } else {
+          change = isDelete ? amount : -amount;
+        }
         return { ...account, balance: account.balance + change }
       }
       return account
@@ -215,7 +220,8 @@ function App() {
   const deleteTransaction = (id) => {
     const transaction = transactions.find(t => t.id === id)
     if (transaction) {
-      updateAccountBalance(transaction.account, transaction.amount, transaction.type === 'income' ? 'expense' : 'income')
+      // Reverse the effect of the transaction on the account balance
+      updateAccountBalance(transaction.account, transaction.amount, transaction.type, true)
     }
     setTransactions(prev => prev.filter(t => t.id !== id))
     addNotification('Transaction deleted')
