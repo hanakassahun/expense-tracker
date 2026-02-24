@@ -9,6 +9,7 @@ const AddTransaction = ({ onAdd, accounts, selectedAccount, onAccountChange, cur
     category: 'food',
     type: 'expense'
   })
+  const [errors, setErrors] = useState({})
 
   const categories = {
     food: { name: 'Food & Dining', icon: '🍔', color: 'bg-orange-500' },
@@ -27,10 +28,14 @@ const AddTransaction = ({ onAdd, accounts, selectedAccount, onAccountChange, cur
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    
-    if (!formData.description.trim() || !formData.amount) {
-      return
-    }
+    const newErrors = {}
+    if (!formData.description.trim()) newErrors.description = 'Description is required.'
+    if (!formData.amount) newErrors.amount = 'Amount is required.'
+    else if (isNaN(formData.amount) || Number(formData.amount) <= 0) newErrors.amount = 'Amount must be a positive number.'
+    if (!selectedAccount) newErrors.account = 'Account is required.'
+    if (!formData.category) newErrors.category = 'Category is required.'
+    setErrors(newErrors)
+    if (Object.keys(newErrors).length > 0) return
 
     const transaction = {
       ...formData,
@@ -39,7 +44,7 @@ const AddTransaction = ({ onAdd, accounts, selectedAccount, onAccountChange, cur
     }
 
     onAdd(transaction)
-    
+
     // Reset form
     setFormData({
       description: '',
@@ -47,6 +52,7 @@ const AddTransaction = ({ onAdd, accounts, selectedAccount, onAccountChange, cur
       category: 'food',
       type: 'expense'
     })
+    setErrors({})
   }
 
   const handleInputChange = (e) => {
@@ -113,6 +119,7 @@ const AddTransaction = ({ onAdd, accounts, selectedAccount, onAccountChange, cur
             placeholder="Enter description..."
             required
           />
+          {errors.description && <div className="text-red-500 text-xs mt-1">{errors.description}</div>}
         </div>
 
         {/* Amount */}
@@ -131,11 +138,12 @@ const AddTransaction = ({ onAdd, accounts, selectedAccount, onAccountChange, cur
               onChange={handleInputChange}
               className="input-field pl-8"
               placeholder="0.00"
-              min="0"
+              min="0.01"
               step="0.01"
               required
             />
           </div>
+          {errors.amount && <div className="text-red-500 text-xs mt-1">{errors.amount}</div>}
         </div>
 
         {/* Account Selection */}
@@ -155,6 +163,7 @@ const AddTransaction = ({ onAdd, accounts, selectedAccount, onAccountChange, cur
               </option>
             ))}
           </select>
+          {errors.account && <div className="text-red-500 text-xs mt-1">{errors.account}</div>}
         </div>
 
         {/* Category */}
