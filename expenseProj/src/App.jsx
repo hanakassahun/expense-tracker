@@ -221,18 +221,16 @@ function App() {
     addNotification('Transaction deleted')
   }
 
-  const filteredTransactions = transactions.filter(transaction => {
+  let filteredTransactions = transactions.filter(transaction => {
     const matchesCategory = filters.category === 'all' || transaction.category === filters.category
     const matchesSearch = transaction.description.toLowerCase().includes(filters.search.toLowerCase())
     const matchesAccount = filters.account === 'all' || transaction.account === parseInt(filters.account)
-    
     let matchesDateRange = true
     if (filters.dateRange !== 'all') {
       const transactionDate = new Date(transaction.date)
       const now = new Date()
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()))
+      const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay())
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-      
       switch (filters.dateRange) {
         case 'week':
           matchesDateRange = transactionDate >= startOfWeek
@@ -244,7 +242,6 @@ function App() {
           matchesDateRange = true
       }
     }
-
     let matchesAmountRange = true
     if (filters.amountRange !== 'all') {
       const amount = parseFloat(transaction.amount)
@@ -262,9 +259,26 @@ function App() {
           matchesAmountRange = true
       }
     }
-    
     return matchesCategory && matchesSearch && matchesDateRange && matchesAmountRange && matchesAccount
   })
+
+  // Sort filtered transactions
+  if (filters.sort === 'oldest') {
+    filteredTransactions = [...filteredTransactions].sort((a, b) => new Date(a.date) - new Date(b.date))
+  } else if (filters.sort === 'largest') {
+    filteredTransactions = [...filteredTransactions].sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount))
+  } else if (filters.sort === 'smallest') {
+    filteredTransactions = [...filteredTransactions].sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount))
+  } else if (filters.sort === 'category') {
+    filteredTransactions = [...filteredTransactions].sort((a, b) => {
+      if (a.category < b.category) return -1
+      if (a.category > b.category) return 1
+      return 0
+    })
+  } else {
+    // Default: newest first
+    filteredTransactions = [...filteredTransactions].sort((a, b) => new Date(b.date) - new Date(a.date))
+  }
 
   const totalIncome = transactions
     .filter(t => t.type === 'income')

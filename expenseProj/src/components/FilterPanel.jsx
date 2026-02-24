@@ -32,6 +32,14 @@ const FilterPanel = ({ filters, onFiltersChange, accounts }) => {
     large: 'Large (> $200)'
   }
 
+  const sortOptions = {
+    newest: 'Newest First',
+    oldest: 'Oldest First',
+    largest: 'Largest Amount',
+    smallest: 'Smallest Amount',
+    category: 'Category (A-Z)'
+  }
+
   const handleFilterChange = (key, value) => {
     onFiltersChange(prev => ({
       ...prev,
@@ -53,7 +61,22 @@ const FilterPanel = ({ filters, onFiltersChange, accounts }) => {
         </h3>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                {/* Sort Dropdown */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Sort By
+                  </label>
+                  <select
+                    value={filters.sort || 'newest'}
+                    onChange={e => handleFilterChange('sort', e.target.value)}
+                    className="input-field"
+                  >
+                    {Object.entries(sortOptions).map(([key, name]) => (
+                      <option key={key} value={key}>{name}</option>
+                    ))}
+                  </select>
+                </div>
         {/* Search */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
