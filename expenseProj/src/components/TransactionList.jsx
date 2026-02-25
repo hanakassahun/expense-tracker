@@ -33,6 +33,12 @@ const TransactionList = ({ transactions, onDelete, formatCurrency, accounts }) =
     return categories[category] || { name: 'Other', icon: '📦', color: 'bg-gray-500' }
   }
 
+  const handleDelete = (id) => {
+    if (window.confirm('Are you sure you want to delete this transaction?')) {
+      onDelete(id);
+    }
+  };
+
   if (transactions.length === 0) {
     return (
       <motion.div 
@@ -43,17 +49,6 @@ const TransactionList = ({ transactions, onDelete, formatCurrency, accounts }) =
       >
         <div className="text-center py-10 sm:py-12">
           <div className="text-6xl mb-4">📊</div>
-      const handleDelete = (id) => {
-        if (window.confirm('Are you sure you want to delete this transaction?')) {
-          onDelete(id);
-        }
-      };
-          <p className="text-gray-500 dark:text-gray-400 text-base">
-            Add some transactions to see them here, or adjust your filters.
-          </p>
-        </div>
-      </motion.div>
-    )
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 tracking-tight">
             No transactions found
           </h3>
@@ -144,7 +139,7 @@ const TransactionList = ({ transactions, onDelete, formatCurrency, accounts }) =
 
                   {/* Delete Button */}
                   <motion.button
-                    onClick={() => onDelete(transaction.id)}
+                    onClick={() => handleDelete(transaction.id)}
                     className="p-2 rounded-lg hover:bg-danger-100 dark:hover:bg-danger-900/20 text-danger-600 hover:text-danger-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-danger-400"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
