@@ -6,12 +6,12 @@ A modern finance dashboard for tracking expenses, analyzing spending, and managi
 ## Features
 
 - **Add, edit, and delete transactions** with categories, accounts, and recurring options
+- **Multi-account system:** Track balances for Cash, Bank, and Mobile Money by default (add/edit/remove accounts in Settings)
 - **Filter transactions** by category, search, date range, amount, and account
 - **Visual analytics**: Pie and line charts for expense breakdown and trends
 - **Budget progress**: Track your spending against a set budget
 - **Export/Import data**: Download your transactions as CSV or JSON for backup/analysis
 - **Dark mode**: Toggle between light and dark themes
-- **Multi-account support**: Track balances across multiple accounts
 - **Notifications**: Get alerts for budget limits and actions
 
 ## Getting Started

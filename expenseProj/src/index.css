@@ -2,6 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
+  min-height: 100vh;
+}
+
+.card {
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 24px 0 rgba(30, 41, 59, 0.08), 0 1.5px 6px 0 rgba(30, 41, 59, 0.04);
+  background: #fff;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.dark .card {
+  background: #23272f;
+  box-shadow: 0 4px 24px 0 rgba(30, 41, 59, 0.18), 0 1.5px 6px 0 rgba(30, 41, 59, 0.10);
+}
+.card-hover:hover {
+  box-shadow: 0 8px 32px 0 rgba(30, 41, 59, 0.16), 0 3px 12px 0 rgba(30, 41, 59, 0.08);
+  transform: translateY(-2px) scale(1.01);
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+  color: #fff;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px 0 rgba(37, 99, 235, 0.08);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+.btn-primary:hover {
+  background: linear-gradient(90deg, #1e40af 0%, #2563eb 100%);
+  box-shadow: 0 4px 16px 0 rgba(37, 99, 235, 0.12);
+  transform: translateY(-1px) scale(1.02);
+}
+
+.input-field {
+  border-radius: 0.75rem;
+  border: 1.5px solid #e5e7eb;
+  background: #f8fafc;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.input-field:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px #2563eb33;
+  outline: none;
+}
+.dark .input-field {
+  background: #23272f;
+  border-color: #374151;
+  color: #f3f4f6;
+}
+
+/* Section separation */
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+.dark .section-title {
+  color: #f3f4f6;
+}
+
+/* Subtle divider */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, #e5e7eb 0%, #f8fafc 100%);
+  margin: 2rem 0;
+  border: none;
+}
+.dark .divider {
+  background: linear-gradient(90deg, #374151 0%, #23272f 100%);
+}
+
 @layer base {
   * {
     /* If you want to apply border color, use border classes in HTML or add here if needed */

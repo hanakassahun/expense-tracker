@@ -1,3 +1,51 @@
+// --- Quick Add Helper ---
+const quickAddCategories = {
+  food: 'food',
+  transport: 'transport',
+  entertainment: 'entertainment',
+  shopping: 'shopping',
+  health: 'health',
+  education: 'education',
+  utilities: 'utilities',
+  rent: 'rent',
+  salary: 'salary',
+  freelance: 'freelance',
+  investment: 'investment',
+  other: 'other',
+};
+
+function parseQuickAdd(input) {
+  // Example: "food 200" or "salary 1000" or "transport 50"
+  if (!input) return null;
+  const parts = input.trim().split(/\s+/);
+  if (parts.length < 2) return null;
+  const categoryKey = parts[0].toLowerCase();
+  const amount = parseFloat(parts[1]);
+  if (!quickAddCategories[categoryKey] || isNaN(amount) || amount <= 0) return null;
+  // Guess type
+  const type = ['salary', 'freelance', 'investment'].includes(categoryKey) ? 'income' : 'expense';
+  return {
+    description: categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1),
+    amount,
+    category: quickAddCategories[categoryKey],
+    type,
+  };
+}
+  const [quickAddValue, setQuickAddValue] = useState("");
+  const [quickAddError, setQuickAddError] = useState("");
+  // Quick Add handler
+  const handleQuickAdd = (e) => {
+    e.preventDefault();
+    const parsed = parseQuickAdd(quickAddValue);
+    if (!parsed) {
+      setQuickAddError("Format: category amount (e.g., food 200)");
+      return;
+    }
+    setQuickAddError("");
+    // Use selectedAccount
+    addTransaction({ ...parsed, account: selectedAccount });
+    setQuickAddValue("");
+  };
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sun, Moon, DollarSign, TrendingUp, PieChart, Filter, Search, Download, Upload, Settings, Bell, Target, Receipt } from 'lucide-react'
@@ -27,8 +75,9 @@ function App() {
   const [recurringTransactions, setRecurringTransactions] = useState([])
   const [savingsGoals, setSavingsGoals] = useState([])
   const [accounts, setAccounts] = useState([
-    { id: 1, name: 'Main Account', balance: 0, currency: 'USD' },
-    { id: 2, name: 'Savings', balance: 0, currency: 'USD' }
+    { id: 1, name: 'Cash', balance: 0, currency: 'USD' },
+    { id: 2, name: 'Bank', balance: 0, currency: 'USD' },
+    { id: 3, name: 'Mobile Money', balance: 0, currency: 'USD' }
   ])
   const [selectedAccount, setSelectedAccount] = useState(1)
   const [currencies, setCurrencies] = useState(['USD', 'EUR', 'GBP', 'JPY', 'CAD'])
@@ -369,11 +418,34 @@ function App() {
         onClear={() => setNotifications([])}
       />
 
+
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 lg:gap-8">
           {/* Left Column - Balance, Budget, and Quick Actions */}
           <div className="xl:col-span-1 space-y-6">
+            {/* Quick Add UX */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="card"
+            >
+              <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Quick Add</h3>
+              <form onSubmit={handleQuickAdd} className="flex flex-col gap-2">
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder="e.g. food 200 or salary 1000"
+                  value={quickAddValue}
+                  onChange={e => setQuickAddValue(e.target.value)}
+                />
+                <button type="submit" className="btn-primary">Add</button>
+                {quickAddError && <span className="text-red-500 text-xs">{quickAddError}</span>}
+              </form>
+              <div className="text-xs text-gray-500 mt-2">Type category and amount, e.g. <b>food 200</b></div>
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
