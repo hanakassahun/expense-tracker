@@ -1,3 +1,16 @@
+    const [quickAddLoading, setQuickAddLoading] = useState(false);
+    const [quickAddSuccess, setQuickAddSuccess] = useState(false);
+    const quickAddInputRef = React.useRef(null);
+
+    // Auto-focus Quick Add on mount
+    React.useEffect(() => {
+      if (quickAddInputRef.current) quickAddInputRef.current.focus();
+    }, []);
+  // Recent transactions for quick repeat
+  const [recentQuickAdds, setRecentQuickAdds] = useState([]);
+
+  // Smart default: last used category
+  const lastCategory = recentQuickAdds.length > 0 ? recentQuickAdds[0].category : 'food';
 // --- Quick Add Helper ---
 const quickAddCategories = {
   food: 'food',
@@ -34,17 +47,49 @@ function parseQuickAdd(input) {
   const [quickAddValue, setQuickAddValue] = useState("");
   const [quickAddError, setQuickAddError] = useState("");
   // Quick Add handler
-  const handleQuickAdd = (e) => {
+  const handleQuickAdd = async (e) => {
     e.preventDefault();
+    setQuickAddLoading(true);
+    setQuickAddSuccess(false);
     const parsed = parseQuickAdd(quickAddValue);
     if (!parsed) {
       setQuickAddError("Format: category amount (e.g., food 200)");
+      setQuickAddLoading(false);
       return;
     }
     setQuickAddError("");
     // Use selectedAccount
+    await new Promise(res => setTimeout(res, 250)); // Simulate quick feedback
     addTransaction({ ...parsed, account: selectedAccount });
+    setRecentQuickAdds(prev => [parsed, ...prev.filter(t => t.description !== parsed.description || t.amount !== parsed.amount)].slice(0, 5));
     setQuickAddValue("");
+    setQuickAddLoading(false);
+    setQuickAddSuccess(true);
+    setTimeout(() => setQuickAddSuccess(false), 900);
+    if (quickAddInputRef.current) quickAddInputRef.current.focus();
+  };
+
+  // Voice input for Quick Add
+  const handleVoiceQuickAdd = () => {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      setQuickAddError('Voice input not supported in this browser.');
+      return;
+    }
+    setQuickAddError('Listening...');
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setQuickAddValue(transcript);
+      setQuickAddError('');
+    };
+    recognition.onerror = (event) => {
+      setQuickAddError('Voice input error: ' + event.error);
+    };
+    recognition.start();
   };
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -433,17 +478,52 @@ function App() {
             >
               <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Quick Add</h3>
               <form onSubmit={handleQuickAdd} className="flex flex-col gap-2">
-                <input
-                  type="text"
-                  className="input-field"
-                  placeholder="e.g. food 200 or salary 1000"
-                  value={quickAddValue}
-                  onChange={e => setQuickAddValue(e.target.value)}
-                />
-                <button type="submit" className="btn-primary">Add</button>
+                <div className="flex gap-2">
+                  <input
+                    ref={quickAddInputRef}
+                    type="text"
+                    className="input-field flex-1"
+                    placeholder={`e.g. ${lastCategory} 200 or salary 1000`}
+                    value={quickAddValue}
+                    onChange={e => setQuickAddValue(e.target.value)}
+                    aria-label="Quick Add Input"
+                    autoComplete="off"
+                    disabled={quickAddLoading}
+                    onKeyDown={e => {
+                      if (e.key === 'ArrowDown' && recentQuickAdds.length > 0) {
+                        e.preventDefault();
+                        setQuickAddValue(`${recentQuickAdds[0].category} ${recentQuickAdds[0].amount}`);
+                      }
+                    }}
+                  />
+                  <button type="button" className="btn-primary px-3" title="Voice input" onClick={handleVoiceQuickAdd} disabled={quickAddLoading} tabIndex={0}>
+                    <span role="img" aria-label="mic">🎤</span>
+                  </button>
+                  {quickAddLoading && <span className="ml-2 animate-spin" style={{fontSize:'1.3em'}} aria-label="Loading">⏳</span>}
+                  {quickAddSuccess && <span className="ml-2 text-green-500" style={{fontSize:'1.3em'}} aria-label="Success">✔️</span>}
+                </div>
+                <button type="submit" className="btn-primary" disabled={quickAddLoading}>Add</button>
                 {quickAddError && <span className="text-red-500 text-xs">{quickAddError}</span>}
               </form>
-              <div className="text-xs text-gray-500 mt-2">Type category and amount, e.g. <b>food 200</b></div>
+              <div className="text-xs text-gray-500 mt-2">Type category and amount, e.g. <b>food 200</b> or use <span role="img" aria-label="mic">🎤</span> for voice</div>
+              {/* Recent/Repeat transactions */}
+              {recentQuickAdds.length > 0 && (
+                <div className="mt-4">
+                  <div className="text-xs text-gray-500 mb-1">Recent:</div>
+                  <div className="flex flex-wrap gap-2">
+                    {recentQuickAdds.map((t, i) => (
+                      <button
+                        key={i}
+                        className="input-field px-3 py-1 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/20 transition"
+                        style={{fontSize: '0.95em'}}
+                        onClick={() => setQuickAddValue(`${t.category} ${t.amount}`)}
+                      >
+                        {t.category} {t.amount}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </motion.div>
 
             <motion.div
