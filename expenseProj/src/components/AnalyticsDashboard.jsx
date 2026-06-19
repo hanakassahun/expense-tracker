@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { PieChart, Pie, Cell, LineChart, Line, Area, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, defs } from 'recharts'
+import { PieChart, Pie, Cell, LineChart, Line, Area, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 import { TrendingUp, PieChart as PieChartIcon, BarChart3 } from 'lucide-react'
 
 const AnalyticsDashboard = ({ transactions, formatCurrency, baseCurrency, accent1 = '#10b981', accent2 = '#a7f3d0' }) => {
