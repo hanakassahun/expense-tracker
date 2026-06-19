@@ -105,6 +105,7 @@ import SavingsGoals from './components/SavingsGoals'
 import DataManager from './components/DataManager'
 import SettingsPanel from './components/SettingsPanel'
 import NotificationCenter from './components/NotificationCenter'
+import AchievementBadges from './components/AchievementBadges'
 
 function App() {
   const [darkMode, setDarkMode] = useState(false)
@@ -390,6 +391,32 @@ function App() {
 
   const balance = totalIncome - totalExpenses
 
+  // Theme based on spending vs budget
+  const spendingRatio = budget > 0 ? (totalExpenses / budget) : 0
+  const isHealthy = spendingRatio <= 1
+  const accentGood = { a1: '#10b981', a2: '#a7f3d0' }
+  const accentBad = { a1: '#dc2626', a2: '#fef3c7' }
+
+  useEffect(() => {
+    const accent = isHealthy ? accentGood : accentBad
+    document.documentElement.style.setProperty('--accent-1', accent.a1)
+    document.documentElement.style.setProperty('--accent-2', accent.a2)
+  }, [isHealthy, totalExpenses, budget])
+
+  // 30-day activity streak (days with transactions in last 30 days)
+  const thirtyDayStreak = (() => {
+    const today = new Date()
+    const daySet = new Set()
+    transactions.forEach(t => {
+      const d = new Date(t.date)
+      const diff = Math.floor((today - d) / (1000 * 60 * 60 * 24))
+      if (diff >= 0 && diff < 30) {
+        daySet.add(d.toDateString())
+      }
+    })
+    return daySet.size >= 30
+  })()
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -539,6 +566,10 @@ function App() {
               />
             </motion.div>
 
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.05 }}>
+              <AchievementBadges thirtyDayStreak={thirtyDayStreak} goals={savingsGoals} budgetHealthy={isHealthy} />
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -612,6 +643,8 @@ function App() {
                 transactions={transactions} 
                 formatCurrency={formatCurrency}
                 baseCurrency={baseCurrency}
+                accent1={(isHealthy ? accentGood : accentBad).a1}
+                accent2={(isHealthy ? accentGood : accentBad).a2}
               />
             </motion.div>
 

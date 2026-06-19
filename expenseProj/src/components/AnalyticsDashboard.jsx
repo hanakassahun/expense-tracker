@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
+import { PieChart, Pie, Cell, LineChart, Line, Area, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, defs } from 'recharts'
 import { TrendingUp, PieChart as PieChartIcon, BarChart3 } from 'lucide-react'
 
-const AnalyticsDashboard = ({ transactions, formatCurrency, baseCurrency }) => {
+const AnalyticsDashboard = ({ transactions, formatCurrency, baseCurrency, accent1 = '#10b981', accent2 = '#a7f3d0' }) => {
   const categories = {
     food: { name: 'Food & Dining', color: '#f97316' },
     transport: { name: 'Transportation', color: '#3b82f6' },
@@ -97,7 +97,7 @@ const AnalyticsDashboard = ({ transactions, formatCurrency, baseCurrency }) => {
           </div>
           
           {expenseBreakdown.length > 0 ? (
-            <div className="h-64">
+            <div className="h-64 chart-neon">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -138,7 +138,14 @@ const AnalyticsDashboard = ({ transactions, formatCurrency, baseCurrency }) => {
           
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={spendingTrend}>
+              <AreaChart data={spendingTrend} className="chart-neon">
+                <defs>
+                  <linearGradient id="neonGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={accent1} stopOpacity={0.28} />
+                    <stop offset="60%" stopColor={accent2} stopOpacity={0.06} />
+                    <stop offset="100%" stopColor={accent2} stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis 
                   dataKey="date" 
@@ -154,15 +161,8 @@ const AnalyticsDashboard = ({ transactions, formatCurrency, baseCurrency }) => {
                   formatter={(value) => [formatCurrency(value), 'Spent']}
                   labelStyle={{ color: '#374151' }}
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="amount" 
-                  stroke="#3b82f6" 
-                  strokeWidth={3}
-                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2 }}
-                />
-              </LineChart>
+                <Area type="monotone" dataKey="amount" stroke={accent1} strokeWidth={2.5} fill="url(#neonGrad)" dot={{ fill: accent1, strokeWidth: 2, r: 3 }} activeDot={{ r: 6, stroke: accent1, strokeWidth: 2 }} />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>

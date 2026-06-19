@@ -201,8 +201,9 @@ const AddTransaction = ({ onAdd, accounts, selectedAccount, onAccountChange, cur
         <motion.button
           type="submit"
           className="btn-primary w-full"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: 1.03, y: -2 }}
+          whileTap={{ scale: 0.96, y: 1 }}
+          transition={{ type: 'spring', stiffness: 700, damping: 18 }}
         >
           <Plus className="h-4 w-4 inline mr-2" />
           Add {formData.type === 'income' ? 'Income' : 'Expense'}

@@ -8,6 +8,12 @@ body {
   min-height: 100vh;
 }
 
+:root {
+  --accent-1: #10b981; /* default emerald */
+  --accent-2: #a7f3d0; /* default mint */
+  --accent-glow: 0 8px 40px var(--accent-1, #10b981, 0.18);
+}
+
 .card {
   border-radius: 1.25rem;
   box-shadow: 0 4px 24px 0 rgba(30, 41, 59, 0.08), 0 1.5px 6px 0 rgba(30, 41, 59, 0.04);
@@ -116,12 +122,37 @@ body {
   }
 
   .gradient-bg {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
   }
 
   .glass-effect {
-    @apply backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border border-white/20 dark:border-gray-700/20;
+    @apply backdrop-blur-md bg-white/60 dark:bg-gray-800/60;
+    border: 1px solid rgba(255,255,255,0.08);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
   }
+
+.badge-glow {
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  box-shadow: 0 6px 22px rgba(0,0,0,0.08), 0 0 18px var(--accent-1, #10b981, 0.12);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.chart-neon {
+  border-radius: 1rem;
+  padding: 0.75rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08), 0 8px 48px rgba(0,0,0,0.04);
+}
+
+.chart-neon .neon-glow {
+  filter: drop-shadow(0 10px 32px rgba(16,185,129,0.12));
+}
 
   /* Color utilities for success, warning, danger, etc. */
   .text-success-600 {
