@@ -12,18 +12,19 @@ const AddTransaction = ({ onAdd, accounts, selectedAccount, onAccountChange, cur
   const [errors, setErrors] = useState({})
 
   const categories = {
-    food: { name: 'Food & Dining', icon: '🍔', color: 'bg-orange-500' },
-    transport: { name: 'Transportation', icon: '🚗', color: 'bg-blue-500' },
-    entertainment: { name: 'Entertainment', icon: '🎬', color: 'bg-purple-500' },
-    shopping: { name: 'Shopping', icon: '🛍️', color: 'bg-pink-500' },
-    health: { name: 'Healthcare', icon: '🏥', color: 'bg-red-500' },
-    education: { name: 'Education', icon: '📚', color: 'bg-green-500' },
-    utilities: { name: 'Utilities', icon: '⚡', color: 'bg-yellow-500' },
-    rent: { name: 'Rent', icon: '🏠', color: 'bg-indigo-500' },
-    salary: { name: 'Salary', icon: '💰', color: 'bg-emerald-500' },
-    freelance: { name: 'Freelance', icon: '💼', color: 'bg-teal-500' },
-    investment: { name: 'Investment', icon: '📈', color: 'bg-cyan-500' },
-    other: { name: 'Other', icon: '📦', color: 'bg-gray-500' }
+    // Neon Palette Vibe Check
+    food: { name: 'Food & Dining', icon: '🍔', color: '#FF007F' },
+    transport: { name: 'Transportation', icon: '🚗', color: '#00C2FF' },
+    entertainment: { name: 'Entertainment', icon: '🎬', color: '#9D00FF' },
+    shopping: { name: 'Shopping', icon: '🛍️', color: '#FF6AA3' },
+    health: { name: 'Healthcare', icon: '🏥', color: '#FF4D4D' },
+    education: { name: 'Education', icon: '📚', color: '#00D36A' },
+    utilities: { name: 'Utilities', icon: '⚡', color: '#FFD166' },
+    rent: { name: 'Rent', icon: '🏠', color: '#00F0FF' },
+    salary: { name: 'Salary', icon: '💰', color: '#00FF87' },
+    freelance: { name: 'Freelance', icon: '💼', color: '#00FF87' },
+    investment: { name: 'Investment', icon: '📈', color: '#00FF87' },
+    other: { name: 'Other', icon: '📦', color: '#6b7280' }
   }
 
   const handleSubmit = (e) => {
@@ -186,9 +187,10 @@ const AddTransaction = ({ onAdd, accounts, selectedAccount, onAccountChange, cur
                   onClick={() => setFormData(prev => ({ ...prev, category: key }))}
                   className={`p-2 rounded-lg text-center transition-all duration-200 ${
                     formData.category === key
-                      ? `${category.color} text-white shadow-md`
+                      ? 'text-white shadow-md'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
+                  style={formData.category === key ? { backgroundColor: category.color } : {}}
                 >
                   <div className="text-lg mb-1">{category.icon}</div>
                   <div className="text-xs font-medium">{category.name}</div>

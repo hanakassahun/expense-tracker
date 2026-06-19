@@ -5,17 +5,18 @@ import { TrendingUp, PieChart as PieChartIcon, BarChart3 } from 'lucide-react'
 
 const AnalyticsDashboard = ({ transactions, formatCurrency, baseCurrency, accent1 = '#10b981', accent2 = '#a7f3d0' }) => {
   const categories = {
-    food: { name: 'Food & Dining', color: '#f97316' },
-    transport: { name: 'Transportation', color: '#3b82f6' },
-    entertainment: { name: 'Entertainment', color: '#a855f7' },
-    shopping: { name: 'Shopping', color: '#ec4899' },
-    health: { name: 'Healthcare', color: '#ef4444' },
-    education: { name: 'Education', color: '#22c55e' },
-    utilities: { name: 'Utilities', color: '#eab308' },
-    rent: { name: 'Rent', color: '#6366f1' },
-    salary: { name: 'Salary', color: '#10b981' },
-    freelance: { name: 'Freelance', color: '#14b8a6' },
-    investment: { name: 'Investment', color: '#06b6d4' },
+    // Neon Palette Vibe Check
+    food: { name: 'Food & Dining', color: '#FF007F' }, // Neon Pink
+    transport: { name: 'Transportation', color: '#00C2FF' },
+    entertainment: { name: 'Entertainment', color: '#9D00FF' }, // Electric Purple
+    shopping: { name: 'Shopping', color: '#FF6AA3' },
+    health: { name: 'Healthcare', color: '#FF4D4D' },
+    education: { name: 'Education', color: '#00D36A' },
+    utilities: { name: 'Utilities', color: '#FFD166' },
+    rent: { name: 'Rent', color: '#00F0FF' }, // Cyber Cyan
+    salary: { name: 'Salary', color: '#00FF87' }, // Mint Green
+    freelance: { name: 'Freelance', color: '#00FF87' },
+    investment: { name: 'Investment', color: '#00FF87' }, // Mint Green
     other: { name: 'Other', color: '#6b7280' }
   }
 
