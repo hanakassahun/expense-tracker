@@ -1,0 +1,6 @@
+node_modules/
+expenseProj/node_modules/
+dist/
+expenseProj/dist/
+package-lock.json
+expenseProj/package-lock.json
