@@ -58,37 +58,61 @@ const DataManager = ({ transactions, onImport, onClose, formatCurrency }) => {
     URL.revokeObjectURL(url)
   }
 
+  const validateImportedTransactions = (payload) => {
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      throw new Error('Import payload must be an object containing a transactions array.')
+    }
+
+    const transactionsPayload = payload.transactions || payload.items
+    if (!Array.isArray(transactionsPayload)) {
+      throw new Error('Import payload must include a transactions array.')
+    }
+
+    const validTransactions = transactionsPayload.filter((transaction) => {
+      const hasRequiredFields =
+        transaction &&
+        typeof transaction === 'object' &&
+        typeof transaction.description === 'string' &&
+        transaction.description.trim() !== '' &&
+        transaction.amount !== undefined &&
+        transaction.type &&
+        transaction.category &&
+        transaction.id !== undefined
+
+      return hasRequiredFields
+    })
+
+    if (validTransactions.length !== transactionsPayload.length) {
+      throw new Error('One or more imported transactions are missing required fields.')
+    }
+
+    return validTransactions.map((transaction) => ({
+      ...transaction,
+      amount: Number(transaction.amount),
+      date: transaction.date || new Date().toISOString(),
+      account: transaction.account ?? 1
+    }))
+  }
+
   const handleImport = () => {
     try {
-      const data = JSON.parse(importData)
-      
-      if (!data.transactions || !Array.isArray(data.transactions)) {
-        throw new Error('Invalid data format. Expected transactions array.')
-      }
-      
-      // Validate transaction structure
-      const isValidTransaction = (t) => {
-        return t.id && t.description && t.amount && t.type && t.category
-      }
-      
-      if (!data.transactions.every(isValidTransaction)) {
-        throw new Error('Some transactions have invalid structure.')
-      }
-      
-      onImport(data.transactions)
+      const parsed = JSON.parse(importData)
+      const sanitizedTransactions = validateImportedTransactions(parsed)
+
+      onImport(sanitizedTransactions)
       setImportSuccess(true)
       setImportError('')
       setImportData('')
-      
+
       setTimeout(() => setImportSuccess(false), 3000)
     } catch (error) {
-      setImportError(error.message)
+      setImportError(error.message || 'Unable to import data.')
       setImportSuccess(false)
     }
   }
 
   const clearAllData = () => {
-    if (window.confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+    if (window.confirm('This will erase every transaction in your ledger. Continue?')) {
       onImport([])
       setImportSuccess(true)
       setImportError('')

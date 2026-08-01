@@ -91,633 +91,224 @@ function parseQuickAdd(input) {
     };
     recognition.start();
   };
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Sun, Moon, DollarSign, TrendingUp, PieChart, Filter, Search, Download, Upload, Settings, Bell, Target, Receipt } from 'lucide-react'
+import React, { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
+import { Bell, Database, LayoutDashboard, Settings, Sparkles } from 'lucide-react'
+
+import AddTransaction from './components/AddTransaction'
+import AnalyticsDashboard from './components/AnalyticsDashboard'
 import BalanceCard from './components/BalanceCard'
 import BudgetProgress from './components/BudgetProgress'
-import AnalyticsDashboard from './components/AnalyticsDashboard'
-import TransactionList from './components/TransactionList'
-import AddTransaction from './components/AddTransaction'
+import DataManager from './components/DataManager'
 import FilterPanel from './components/FilterPanel'
+import NotificationCenter from './components/NotificationCenter'
 import RecurringTransactions from './components/RecurringTransactions'
 import SavingsGoals from './components/SavingsGoals'
-import DataManager from './components/DataManager'
 import SettingsPanel from './components/SettingsPanel'
-import NotificationCenter from './components/NotificationCenter'
-import AchievementBadges from './components/AchievementBadges'
+import TransactionList from './components/TransactionList'
+import { useExpenseContext } from './context/ExpenseContext'
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false)
-  const [transactions, setTransactions] = useState([])
-  const [budget, setBudget] = useState(5000)
-  const [filters, setFilters] = useState({
-    category: 'all',
-    search: '',
-    dateRange: 'all',
-    amountRange: 'all',
-    account: 'all'
-  })
-  const [recurringTransactions, setRecurringTransactions] = useState([])
-  const [savingsGoals, setSavingsGoals] = useState([])
-  const [accounts, setAccounts] = useState([
-    { id: 1, name: 'Cash', balance: 0, currency: 'USD' },
-    { id: 2, name: 'Bank', balance: 0, currency: 'USD' },
-    { id: 3, name: 'Mobile Money', balance: 0, currency: 'USD' }
-  ])
-  const [selectedAccount, setSelectedAccount] = useState(1)
-  const [currencies, setCurrencies] = useState(['USD', 'EUR', 'GBP', 'JPY', 'CAD'])
-  const [baseCurrency, setBaseCurrency] = useState('USD')
-  const [notifications, setNotifications] = useState([])
   const [showSettings, setShowSettings] = useState(false)
   const [showDataManager, setShowDataManager] = useState(false)
   const [showRecurring, setShowRecurring] = useState(false)
   const [showGoals, setShowGoals] = useState(false)
+  const [currencies] = useState(['USD', 'EUR', 'GBP', 'JPY', 'CAD'])
 
-  // Load data from localStorage on mount
-  useEffect(() => {
-    const savedTransactions = localStorage.getItem('transactions')
-    const savedBudget = localStorage.getItem('budget')
-    const savedDarkMode = localStorage.getItem('darkMode')
-    const savedRecurring = localStorage.getItem('recurringTransactions')
-    const savedGoals = localStorage.getItem('savingsGoals')
-    const savedAccounts = localStorage.getItem('accounts')
-    const savedBaseCurrency = localStorage.getItem('baseCurrency')
-    
-    if (savedTransactions) {
-      setTransactions(JSON.parse(savedTransactions))
-    }
-    if (savedBudget) {
-      setBudget(JSON.parse(savedBudget))
-    }
-    if (savedDarkMode) {
-      setDarkMode(JSON.parse(savedDarkMode))
-    }
-    if (savedRecurring) {
-      setRecurringTransactions(JSON.parse(savedRecurring))
-    }
-    if (savedGoals) {
-      setSavingsGoals(JSON.parse(savedGoals))
-    }
-    if (savedAccounts) {
-      setAccounts(JSON.parse(savedAccounts))
-    }
-    if (savedBaseCurrency) {
-      setBaseCurrency(savedBaseCurrency)
-    }
-  }, [])
+  const {
+    transactions,
+    budget,
+    recurringTransactions,
+    savingsGoals,
+    accounts,
+    baseCurrency,
+    notifications,
+    setNotifications,
+    selectedAccount,
+    setSelectedAccount,
+    filters,
+    setFilters,
+    addTransaction,
+    deleteTransaction,
+    setBudget,
+    setAccounts,
+    setBaseCurrency,
+    setRecurringTransactions,
+    setSavingsGoals
+  } = useExpenseContext()
 
-  // Save data to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('transactions', JSON.stringify(transactions))
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: baseCurrency
+    }).format(value)
+
+  const { totalIncome, totalExpenses, balance } = useMemo(() => {
+    const income = transactions
+      .filter((transaction) => transaction.type === 'income')
+      .reduce((sum, transaction) => sum + Number(transaction.amount || 0), 0)
+
+    const expenses = transactions
+      .filter((transaction) => transaction.type === 'expense')
+      .reduce((sum, transaction) => sum + Number(transaction.amount || 0), 0)
+
+    return {
+      totalIncome: income,
+      totalExpenses: expenses,
+      balance: income - expenses
+    }
   }, [transactions])
 
-  useEffect(() => {
-    localStorage.setItem('budget', JSON.stringify(budget))
-  }, [budget])
+  const filteredTransactions = useMemo(() => {
+    const result = (transactions || []).filter((transaction) => {
+      const matchesCategory = filters.category === 'all' || transaction.category === filters.category
+      const matchesSearch = transaction.description.toLowerCase().includes(filters.search.toLowerCase())
+      const matchesAccount = filters.account === 'all' || transaction.account === Number(filters.account)
 
-  useEffect(() => {
-    localStorage.setItem('darkMode', JSON.stringify(darkMode))
-    if (darkMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }, [darkMode])
+      let matchesDateRange = true
+      if (filters.dateRange !== 'all') {
+        const transactionDate = new Date(transaction.date)
+        const now = new Date()
+        const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay())
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  useEffect(() => {
-    localStorage.setItem('recurringTransactions', JSON.stringify(recurringTransactions))
-  }, [recurringTransactions])
-
-  useEffect(() => {
-    localStorage.setItem('savingsGoals', JSON.stringify(savingsGoals))
-  }, [savingsGoals])
-
-  useEffect(() => {
-    localStorage.setItem('accounts', JSON.stringify(accounts))
-  }, [accounts])
-
-  useEffect(() => {
-    localStorage.setItem('baseCurrency', baseCurrency)
-  }, [baseCurrency])
-
-  // Process recurring transactions daily
-  useEffect(() => {
-    const checkRecurringTransactions = () => {
-      const today = new Date()
-      const newTransactions = []
-      
-      recurringTransactions.forEach(recurring => {
-        if (shouldProcessRecurring(recurring, today)) {
-          newTransactions.push({
-            id: Date.now() + Math.random(),
-            description: recurring.description,
-            amount: recurring.amount,
-            category: recurring.category,
-            type: recurring.type,
-            account: recurring.account,
-            date: today.toISOString(),
-            isRecurring: true,
-            recurringId: recurring.id
-          })
-        }
-      })
-      
-      if (newTransactions.length > 0) {
-        setTransactions(prev => [...newTransactions, ...prev])
-        addNotification(`Added ${newTransactions.length} recurring transactions`)
-      }
-    }
-
-    // Check once per day
-    const interval = setInterval(checkRecurringTransactions, 24 * 60 * 60 * 1000)
-    checkRecurringTransactions() // Check immediately on mount
-    
-    return () => clearInterval(interval)
-  }, [recurringTransactions])
-
-  const shouldProcessRecurring = (recurring, today) => {
-    const lastProcessed = new Date(recurring.lastProcessed || 0)
-    const daysSinceLastProcessed = Math.floor((today - lastProcessed) / (1000 * 60 * 60 * 24))
-    
-    switch (recurring.frequency) {
-      case 'daily':
-        return daysSinceLastProcessed >= 1
-      case 'weekly':
-        return daysSinceLastProcessed >= 7
-      case 'monthly':
-        return daysSinceLastProcessed >= 30
-      case 'yearly':
-        return daysSinceLastProcessed >= 365
-      default:
-        return false
-    }
-  }
-
-  const addTransaction = (transaction) => {
-    const newTransaction = {
-      ...transaction,
-      id: Date.now(),
-      date: new Date().toISOString(),
-      account: selectedAccount
-    }
-    setTransactions(prev => [newTransaction, ...prev])
-    
-    // Update account balance
-    updateAccountBalance(selectedAccount, transaction.amount, transaction.type)
-    
-    // Check budget alerts
-    checkBudgetAlerts(transaction)
-    
-    addNotification(`Added ${transaction.type}: ${transaction.description}`)
-  }
-
-  const updateAccountBalance = (accountId, amount, type, isDelete = false) => {
-    setAccounts(prev => prev.map(account => {
-      if (account.id === accountId) {
-        let change = 0;
-        if (type === 'income') {
-          change = isDelete ? -amount : amount;
-        } else {
-          change = isDelete ? amount : -amount;
-        }
-        return { ...account, balance: account.balance + change }
-      }
-      return account
-    }))
-  }
-
-  const checkBudgetAlerts = (transaction) => {
-    if (transaction.type === 'expense') {
-      const currentExpenses = transactions
-        .filter(t => t.type === 'expense')
-        .reduce((sum, t) => sum + parseFloat(t.amount), 0) + parseFloat(transaction.amount)
-      
-      if (currentExpenses > budget * 0.8) {
-        addNotification(`Warning: You've used ${Math.round((currentExpenses / budget) * 100)}% of your budget!`, 'warning')
-      }
-      if (currentExpenses > budget) {
-        addNotification(`Alert: You've exceeded your budget by ${formatCurrency(currentExpenses - budget)}!`, 'error')
-      }
-    }
-  }
-
-  const addNotification = (message, type = 'info') => {
-    const notification = {
-      id: Date.now(),
-      message,
-      type,
-      timestamp: new Date().toISOString()
-    }
-    setNotifications(prev => [notification, ...prev.slice(0, 9)]) // Keep only last 10
-  }
-
-  const deleteTransaction = (id) => {
-    const transaction = transactions.find(t => t.id === id)
-    if (transaction) {
-      // Reverse the effect of the transaction on the account balance
-      updateAccountBalance(transaction.account, transaction.amount, transaction.type, true)
-    }
-    setTransactions(prev => prev.filter(t => t.id !== id))
-    addNotification('Transaction deleted')
-  }
-
-  let filteredTransactions = transactions.filter(transaction => {
-    const matchesCategory = filters.category === 'all' || transaction.category === filters.category
-    const matchesSearch = transaction.description.toLowerCase().includes(filters.search.toLowerCase())
-    const matchesAccount = filters.account === 'all' || transaction.account === parseInt(filters.account)
-    let matchesDateRange = true
-    if (filters.dateRange !== 'all') {
-      const transactionDate = new Date(transaction.date)
-      const now = new Date()
-      const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay())
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-      switch (filters.dateRange) {
-        case 'week':
+        if (filters.dateRange === 'week') {
           matchesDateRange = transactionDate >= startOfWeek
-          break
-        case 'month':
+        } else if (filters.dateRange === 'month') {
           matchesDateRange = transactionDate >= startOfMonth
-          break
-        default:
-          matchesDateRange = true
+        }
       }
-    }
-    let matchesAmountRange = true
-    if (filters.amountRange !== 'all') {
-      const amount = parseFloat(transaction.amount)
-      switch (filters.amountRange) {
-        case 'small':
+
+      let matchesAmountRange = true
+      if (filters.amountRange !== 'all') {
+        const amount = Number(transaction.amount)
+        if (filters.amountRange === 'small') {
           matchesAmountRange = amount < 50
-          break
-        case 'medium':
+        } else if (filters.amountRange === 'medium') {
           matchesAmountRange = amount >= 50 && amount < 200
-          break
-        case 'large':
+        } else if (filters.amountRange === 'large') {
           matchesAmountRange = amount >= 200
-          break
-        default:
-          matchesAmountRange = true
+        }
       }
+
+      return matchesCategory && matchesSearch && matchesAccount && matchesDateRange && matchesAmountRange
+    })
+
+    switch (filters.sort) {
+      case 'oldest':
+        return [...result].sort((a, b) => new Date(a.date) - new Date(b.date))
+      case 'largest':
+        return [...result].sort((a, b) => Number(b.amount) - Number(a.amount))
+      case 'smallest':
+        return [...result].sort((a, b) => Number(a.amount) - Number(b.amount))
+      case 'category':
+        return [...result].sort((a, b) => a.category.localeCompare(b.category))
+      default:
+        return [...result].sort((a, b) => new Date(b.date) - new Date(a.date))
     }
-    return matchesCategory && matchesSearch && matchesDateRange && matchesAmountRange && matchesAccount
-  })
-
-  // Sort filtered transactions
-  if (filters.sort === 'oldest') {
-    filteredTransactions = [...filteredTransactions].sort((a, b) => new Date(a.date) - new Date(b.date))
-  } else if (filters.sort === 'largest') {
-    filteredTransactions = [...filteredTransactions].sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount))
-  } else if (filters.sort === 'smallest') {
-    filteredTransactions = [...filteredTransactions].sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount))
-  } else if (filters.sort === 'category') {
-    filteredTransactions = [...filteredTransactions].sort((a, b) => {
-      if (a.category < b.category) return -1
-      if (a.category > b.category) return 1
-      return 0
-    })
-  } else {
-    // Default: newest first
-    filteredTransactions = [...filteredTransactions].sort((a, b) => new Date(b.date) - new Date(a.date))
-  }
-
-  const totalIncome = transactions
-    .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + parseFloat(t.amount), 0)
-
-  const totalExpenses = transactions
-    .filter(t => t.type === 'expense')
-    .reduce((sum, t) => sum + parseFloat(t.amount), 0)
-
-  const balance = totalIncome - totalExpenses
-
-  // Theme based on spending vs budget
-  const spendingRatio = budget > 0 ? (totalExpenses / budget) : 0
-  const isHealthy = spendingRatio <= 1
-  const accentGood = { a1: '#10b981', a2: '#a7f3d0' }
-  const accentBad = { a1: '#dc2626', a2: '#fef3c7' }
-
-  useEffect(() => {
-    const accent = isHealthy ? accentGood : accentBad
-    document.documentElement.style.setProperty('--accent-1', accent.a1)
-    document.documentElement.style.setProperty('--accent-2', accent.a2)
-  }, [isHealthy, totalExpenses, budget])
-
-  // 30-day activity streak (days with transactions in last 30 days)
-  const thirtyDayStreak = (() => {
-    const today = new Date()
-    const daySet = new Set()
-    transactions.forEach(t => {
-      const d = new Date(t.date)
-      const diff = Math.floor((today - d) / (1000 * 60 * 60 * 24))
-      if (diff >= 0 && diff < 30) {
-        daySet.add(d.toDateString())
-      }
-    })
-    return daySet.size >= 30
-  })()
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: baseCurrency,
-    }).format(amount)
-  }
+  }, [filters, transactions])
 
   return (
-    <div className={`min-h-screen transition-colors duration-200 font-sans ${darkMode ? 'dark' : ''}`}>
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-16 py-3 sm:py-0 gap-2 sm:gap-0">
-            <div className="flex items-center space-x-3 mb-2 sm:mb-0">
-              <div className="gradient-bg p-2 rounded-lg shadow-md">
-                <DollarSign className="h-6 w-6 text-white" />
-              </div>
-              <h1 className="text-2xl sm:text-xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight">
-                Finance Dashboard
-              </h1>
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.12),_transparent_35%),linear-gradient(135deg,_#f8fafc_0%,_#eef2ff_100%)] text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+      <NotificationCenter notifications={notifications} onClear={() => setNotifications([])} />
+
+      <header className="sticky top-0 z-40 border-b border-white/40 bg-white/70 px-4 py-4 shadow-lg backdrop-blur-2xl sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-cyan-500 p-3 shadow-lg">
+              <LayoutDashboard className="h-6 w-6 text-white" />
             </div>
-            <div className="flex items-center gap-1 sm:gap-2 md:gap-4 flex-wrap">
-              {/* Responsive action buttons */}
-              <button
-                onClick={() => setShowRecurring(!showRecurring)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                title="Recurring Transactions"
-              >
-                <Target className="h-5 w-5 text-blue-600" />
-              </button>
-              <button
-                onClick={() => setShowGoals(!showGoals)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400"
-                title="Savings Goals"
-              >
-                <TrendingUp className="h-5 w-5 text-green-600" />
-              </button>
-              <button
-                onClick={() => setShowDataManager(!showDataManager)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                title="Data Management"
-              >
-                <Download className="h-5 w-5 text-purple-600" />
-              </button>
-              <button
-                onClick={() => setShowSettings(!showSettings)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400"
-                title="Settings"
-              >
-                <Settings className="h-5 w-5 text-gray-600" />
-              </button>
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                title="Toggle Theme"
-              >
-                {darkMode ? (
-                  <Sun className="h-5 w-5 text-yellow-500" />
-                ) : (
-                  <Moon className="h-5 w-5 text-gray-600" />
-                )}
-              </button>
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500">Finance OS</p>
+              <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Hana Tracker Dashboard</h1>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => {
+                setNotifications((prev) => [
+                  {
+                    id: Date.now(),
+                    message: 'Daily snapshot refreshed',
+                    type: 'info',
+                    timestamp: new Date().toISOString()
+                  },
+                  ...prev
+                ].slice(0, 6))
+              }}
+              className="rounded-xl border border-slate-200 bg-white/80 p-2.5 text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
+              aria-label="Show notifications"
+            >
+              <Bell className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => setShowDataManager(true)}
+              className="rounded-xl border border-slate-200 bg-white/80 p-2.5 text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
+              aria-label="Open data manager"
+            >
+              <Database className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => setShowSettings(true)}
+              className="rounded-xl border border-slate-200 bg-white/80 p-2.5 text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
+              aria-label="Open settings"
+            >
+              <Settings className="h-5 w-5" />
+            </button>
+            <div className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700">
+              <Sparkles className="mr-2 inline h-4 w-4" />
+              Live ledger synced
             </div>
           </div>
         </div>
       </header>
 
-      {/* Notification Center */}
-      <NotificationCenter 
-        notifications={notifications} 
-        onClear={() => setNotifications([])}
-      />
-
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 lg:gap-8">
-          {/* Left Column - Balance, Budget, and Quick Actions */}
-          <div className="xl:col-span-1 space-y-6">
-            {/* Quick Add UX */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="card"
-            >
-              <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Quick Add</h3>
-              <form onSubmit={handleQuickAdd} className="flex flex-col gap-2">
-                <div className="flex gap-2">
-                  <input
-                    ref={quickAddInputRef}
-                    type="text"
-                    className="input-field flex-1"
-                    placeholder={`e.g. ${lastCategory} 200 or salary 1000`}
-                    value={quickAddValue}
-                    onChange={e => setQuickAddValue(e.target.value)}
-                    aria-label="Quick Add Input"
-                    autoComplete="off"
-                    disabled={quickAddLoading}
-                    onKeyDown={e => {
-                      if (e.key === 'ArrowDown' && recentQuickAdds.length > 0) {
-                        e.preventDefault();
-                        setQuickAddValue(`${recentQuickAdds[0].category} ${recentQuickAdds[0].amount}`);
-                      }
-                    }}
-                  />
-                  <button type="button" className="btn-primary px-3" title="Voice input" onClick={handleVoiceQuickAdd} disabled={quickAddLoading} tabIndex={0}>
-                    <span role="img" aria-label="mic">🎤</span>
-                  </button>
-                  {quickAddLoading && <span className="ml-2 animate-spin" style={{fontSize:'1.3em'}} aria-label="Loading">⏳</span>}
-                  {quickAddSuccess && <span className="ml-2 text-green-500" style={{fontSize:'1.3em'}} aria-label="Success">✔️</span>}
-                </div>
-                <button type="submit" className="btn-primary" disabled={quickAddLoading}>Add</button>
-                {quickAddError && <span className="text-red-500 text-xs">{quickAddError}</span>}
-              </form>
-              <div className="text-xs text-gray-500 mt-2">Type category and amount, e.g. <b>food 200</b> or use <span role="img" aria-label="mic">🎤</span> for voice</div>
-              {/* Recent/Repeat transactions */}
-              {recentQuickAdds.length > 0 && (
-                <div className="mt-4">
-                  <div className="text-xs text-gray-500 mb-1">Recent:</div>
-                  <div className="flex flex-wrap gap-2">
-                    {recentQuickAdds.map((t, i) => (
-                      <button
-                        key={i}
-                        className="input-field px-3 py-1 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/20 transition"
-                        style={{fontSize: '0.95em'}}
-                        onClick={() => setQuickAddValue(`${t.category} ${t.amount}`)}
-                      >
-                        {t.category} {t.amount}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <BalanceCard 
-                balance={balance}
-                totalIncome={totalIncome}
-                totalExpenses={totalExpenses}
-                formatCurrency={formatCurrency}
-              />
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.05 }}>
-              <AchievementBadges thirtyDayStreak={thirtyDayStreak} goals={savingsGoals} budgetHealthy={isHealthy} />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <BudgetProgress 
-                budget={budget}
-                totalExpenses={totalExpenses}
-                onBudgetChange={setBudget}
-                formatCurrency={formatCurrency}
-              />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <AddTransaction 
-                onAdd={addTransaction} 
-                accounts={accounts}
-                selectedAccount={selectedAccount}
-                onAccountChange={setSelectedAccount}
-                currencies={currencies}
-                baseCurrency={baseCurrency}
-              />
-            </motion.div>
-
-            {/* Account Selector */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="card"
-            >
-              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Accounts</h3>
-              <div className="space-y-3">
-                {accounts.map(account => (
-                  <div 
-                    key={account.id}
-                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                      selectedAccount === account.id 
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                    }`}
-                    onClick={() => setSelectedAccount(account.id)}
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium text-gray-900 dark:text-white">{account.name}</span>
-                      <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                        {formatCurrency(account.balance)}
-                      </span>
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {account.currency}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="space-y-6">
+            <BalanceCard balance={balance} totalIncome={totalIncome} totalExpenses={totalExpenses} formatCurrency={formatCurrency} />
+            <AddTransaction onAdd={addTransaction} accounts={accounts} selectedAccount={selectedAccount} onAccountChange={setSelectedAccount} currencies={currencies} baseCurrency={baseCurrency} />
+            <FilterPanel filters={filters} onFiltersChange={setFilters} accounts={accounts} />
           </div>
 
-          {/* Right Column - Analytics and Transactions */}
-          <div className="xl:col-span-3 space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              <AnalyticsDashboard 
-                transactions={transactions} 
-                formatCurrency={formatCurrency}
-                baseCurrency={baseCurrency}
-                accent1={(isHealthy ? accentGood : accentBad).a1}
-                accent2={(isHealthy ? accentGood : accentBad).a2}
-              />
-            </motion.div>
+          <div className="space-y-6">
+            <AnalyticsDashboard transactions={transactions} formatCurrency={formatCurrency} baseCurrency={baseCurrency} />
+            <TransactionList transactions={filteredTransactions} onDelete={deleteTransaction} formatCurrency={formatCurrency} accounts={accounts} />
+          </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-            >
-              <FilterPanel 
-                filters={filters} 
-                onFiltersChange={setFilters}
-                accounts={accounts}
-              />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-            >
-              <TransactionList 
-                transactions={filteredTransactions}
-                onDelete={deleteTransaction}
-                formatCurrency={formatCurrency}
-                accounts={accounts}
-              />
-            </motion.div>
+          <div className="space-y-6">
+            <BudgetProgress budget={budget} totalExpenses={totalExpenses} onBudgetChange={setBudget} formatCurrency={formatCurrency} />
+            <SavingsGoals goals={savingsGoals} onUpdate={setSavingsGoals} onClose={() => setShowGoals(false)} formatCurrency={formatCurrency} />
+            <RecurringTransactions recurringTransactions={recurringTransactions} onUpdate={setRecurringTransactions} accounts={accounts} onClose={() => setShowRecurring(false)} />
           </div>
         </div>
       </main>
 
-      {/* Modals and Overlays */}
-      <AnimatePresence>
-        {showRecurring && (
-          <RecurringTransactions
-            recurringTransactions={recurringTransactions}
-            onUpdate={setRecurringTransactions}
-            accounts={accounts}
-            onClose={() => setShowRecurring(false)}
-          />
-        )}
-        
-        {showGoals && (
-          <SavingsGoals
-            goals={savingsGoals}
-            onUpdate={setSavingsGoals}
-            onClose={() => setShowGoals(false)}
-            formatCurrency={formatCurrency}
-          />
-        )}
-        
-        {showDataManager && (
-          <DataManager
-            transactions={transactions}
-            onImport={setTransactions}
-            onClose={() => setShowDataManager(false)}
-            formatCurrency={formatCurrency}
-          />
-        )}
-        
-        {showSettings && (
-          <SettingsPanel
-            darkMode={darkMode}
-            onDarkModeChange={setDarkMode}
-            baseCurrency={baseCurrency}
-            onCurrencyChange={setBaseCurrency}
-            currencies={currencies}
-            accounts={accounts}
-            onAccountsUpdate={setAccounts}
-            onClose={() => setShowSettings(false)}
-          />
-        )}
-      </AnimatePresence>
+      {showSettings && (
+        <SettingsPanel
+          darkMode={false}
+          onDarkModeChange={() => {}}
+          baseCurrency={baseCurrency}
+          onCurrencyChange={setBaseCurrency}
+          currencies={currencies}
+          accounts={accounts}
+          onAccountsUpdate={setAccounts}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
+
+      {showDataManager && (
+        <DataManager
+          transactions={transactions}
+          onImport={setTransactions}
+          onClose={() => setShowDataManager(false)}
+          formatCurrency={formatCurrency}
+        />
+      )}
+
+      {showRecurring && <RecurringTransactions recurringTransactions={recurringTransactions} onUpdate={setRecurringTransactions} accounts={accounts} onClose={() => setShowRecurring(false)} />}
+      {showGoals && <SavingsGoals goals={savingsGoals} onUpdate={setSavingsGoals} onClose={() => setShowGoals(false)} formatCurrency={formatCurrency} />}
     </div>
   )
 }
