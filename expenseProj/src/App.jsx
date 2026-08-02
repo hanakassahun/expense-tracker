@@ -175,7 +175,7 @@ function App() {
       </header>
 
       <main className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-[1fr_2fr_1fr]">
           <div className="space-y-6">
             <BalanceCard balance={balance} totalIncome={totalIncome} totalExpenses={totalExpenses} formatCurrency={formatCurrency} />
             <AddTransaction onAdd={addTransaction} accounts={accounts} selectedAccount={selectedAccount} onAccountChange={setSelectedAccount} currencies={currencies} baseCurrency={baseCurrency} />
