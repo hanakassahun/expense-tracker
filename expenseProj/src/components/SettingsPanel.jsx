@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { X, Settings, Globe, CreditCard, Palette, Bell, Shield, Plus, Edit, Trash2 } from 'lucide-react'
 
@@ -10,7 +10,8 @@ const SettingsPanel = ({
   currencies, 
   accounts, 
   onAccountsUpdate, 
-  onClose 
+  onClose,
+  isOpen = false
 }) => {
   const [activeTab, setActiveTab] = useState('general')
   const [showAddAccount, setShowAddAccount] = useState(false)
@@ -82,6 +83,28 @@ const SettingsPanel = ({
     setShowAddAccount(false)
   }
 
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return undefined
+    }
+
+    if (!isOpen) {
+      document.body.style.overflow = 'unset'
+      return undefined
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow || 'unset'
+    }
+  }, [isOpen])
+
+  if (!isOpen) {
+    return null
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -108,6 +131,7 @@ const SettingsPanel = ({
             </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >

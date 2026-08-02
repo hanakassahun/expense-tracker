@@ -1,96 +1,3 @@
-    const [quickAddLoading, setQuickAddLoading] = useState(false);
-    const [quickAddSuccess, setQuickAddSuccess] = useState(false);
-    const quickAddInputRef = React.useRef(null);
-
-    // Auto-focus Quick Add on mount
-    React.useEffect(() => {
-      if (quickAddInputRef.current) quickAddInputRef.current.focus();
-    }, []);
-  // Recent transactions for quick repeat
-  const [recentQuickAdds, setRecentQuickAdds] = useState([]);
-
-  // Smart default: last used category
-  const lastCategory = recentQuickAdds.length > 0 ? recentQuickAdds[0].category : 'food';
-// --- Quick Add Helper ---
-const quickAddCategories = {
-  food: 'food',
-  transport: 'transport',
-  entertainment: 'entertainment',
-  shopping: 'shopping',
-  health: 'health',
-  education: 'education',
-  utilities: 'utilities',
-  rent: 'rent',
-  salary: 'salary',
-  freelance: 'freelance',
-  investment: 'investment',
-  other: 'other',
-};
-
-function parseQuickAdd(input) {
-  // Example: "food 200" or "salary 1000" or "transport 50"
-  if (!input) return null;
-  const parts = input.trim().split(/\s+/);
-  if (parts.length < 2) return null;
-  const categoryKey = parts[0].toLowerCase();
-  const amount = parseFloat(parts[1]);
-  if (!quickAddCategories[categoryKey] || isNaN(amount) || amount <= 0) return null;
-  // Guess type
-  const type = ['salary', 'freelance', 'investment'].includes(categoryKey) ? 'income' : 'expense';
-  return {
-    description: categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1),
-    amount,
-    category: quickAddCategories[categoryKey],
-    type,
-  };
-}
-  const [quickAddValue, setQuickAddValue] = useState("");
-  const [quickAddError, setQuickAddError] = useState("");
-  // Quick Add handler
-  const handleQuickAdd = async (e) => {
-    e.preventDefault();
-    setQuickAddLoading(true);
-    setQuickAddSuccess(false);
-    const parsed = parseQuickAdd(quickAddValue);
-    if (!parsed) {
-      setQuickAddError("Format: category amount (e.g., food 200)");
-      setQuickAddLoading(false);
-      return;
-    }
-    setQuickAddError("");
-    // Use selectedAccount
-    await new Promise(res => setTimeout(res, 250)); // Simulate quick feedback
-    addTransaction({ ...parsed, account: selectedAccount });
-    setRecentQuickAdds(prev => [parsed, ...prev.filter(t => t.description !== parsed.description || t.amount !== parsed.amount)].slice(0, 5));
-    setQuickAddValue("");
-    setQuickAddLoading(false);
-    setQuickAddSuccess(true);
-    setTimeout(() => setQuickAddSuccess(false), 900);
-    if (quickAddInputRef.current) quickAddInputRef.current.focus();
-  };
-
-  // Voice input for Quick Add
-  const handleVoiceQuickAdd = () => {
-    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      setQuickAddError('Voice input not supported in this browser.');
-      return;
-    }
-    setQuickAddError('Listening...');
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setQuickAddValue(transcript);
-      setQuickAddError('');
-    };
-    recognition.onerror = (event) => {
-      setQuickAddError('Voice input error: ' + event.error);
-    };
-    recognition.start();
-  };
 import React, { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Bell, Database, LayoutDashboard, Settings, Sparkles } from 'lucide-react'
@@ -134,7 +41,8 @@ function App() {
     setAccounts,
     setBaseCurrency,
     setRecurringTransactions,
-    setSavingsGoals
+    setSavingsGoals,
+    setTransactions
   } = useExpenseContext()
 
   const formatCurrency = (value) =>
@@ -142,6 +50,8 @@ function App() {
       style: 'currency',
       currency: baseCurrency
     }).format(value)
+
+  const handleRecurringClose = () => setShowRecurring(false)
 
   const { totalIncome, totalExpenses, balance } = useMemo(() => {
     const income = transactions
@@ -279,14 +189,20 @@ function App() {
 
           <div className="space-y-6">
             <BudgetProgress budget={budget} totalExpenses={totalExpenses} onBudgetChange={setBudget} formatCurrency={formatCurrency} />
-            <SavingsGoals goals={savingsGoals} onUpdate={setSavingsGoals} onClose={() => setShowGoals(false)} formatCurrency={formatCurrency} />
-            <RecurringTransactions recurringTransactions={recurringTransactions} onUpdate={setRecurringTransactions} accounts={accounts} onClose={() => setShowRecurring(false)} />
+            <RecurringTransactions
+              isOpen={showRecurring}
+              recurringTransactions={recurringTransactions}
+              onUpdate={setRecurringTransactions}
+              accounts={accounts}
+              onClose={handleRecurringClose}
+            />
           </div>
         </div>
       </main>
 
       {showSettings && (
         <SettingsPanel
+          isOpen={showSettings}
           darkMode={false}
           onDarkModeChange={() => {}}
           baseCurrency={baseCurrency}
@@ -300,6 +216,7 @@ function App() {
 
       {showDataManager && (
         <DataManager
+          isOpen={showDataManager}
           transactions={transactions}
           onImport={setTransactions}
           onClose={() => setShowDataManager(false)}
@@ -307,8 +224,15 @@ function App() {
         />
       )}
 
-      {showRecurring && <RecurringTransactions recurringTransactions={recurringTransactions} onUpdate={setRecurringTransactions} accounts={accounts} onClose={() => setShowRecurring(false)} />}
-      {showGoals && <SavingsGoals goals={savingsGoals} onUpdate={setSavingsGoals} onClose={() => setShowGoals(false)} formatCurrency={formatCurrency} />}
+      {showGoals && (
+        <SavingsGoals
+          isOpen={showGoals}
+          goals={savingsGoals}
+          onUpdate={setSavingsGoals}
+          onClose={() => setShowGoals(false)}
+          formatCurrency={formatCurrency}
+        />
+      )}
     </div>
   )
 }

@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { X, Plus, Calendar, Repeat, DollarSign, Edit, Trash2 } from 'lucide-react'
 
-const RecurringTransactions = ({ recurringTransactions, onUpdate, accounts, onClose }) => {
+const RecurringTransactions = ({ recurringTransactions, onUpdate, accounts, onClose, isOpen = false }) => {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [formData, setFormData] = useState({
@@ -82,6 +82,32 @@ const RecurringTransactions = ({ recurringTransactions, onUpdate, accounts, onCl
     })
   }
 
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return undefined
+    }
+
+    if (!isOpen) {
+      document.body.style.overflow = 'unset'
+      return undefined
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow || 'unset'
+    }
+  }, [isOpen])
+
+  const handleClose = () => {
+    onClose?.()
+  }
+
+  if (!isOpen) {
+    return null
+  }
+
   const getNextOccurrence = (frequency, startDate) => {
     const start = new Date(startDate)
     const now = new Date()
@@ -105,8 +131,8 @@ const RecurringTransactions = ({ recurringTransactions, onUpdate, accounts, onCl
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-md flex items-center justify-center p-4 z-50"
-      onClick={onClose}
+      className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center p-4 z-50"
+      onClick={handleClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -126,6 +152,7 @@ const RecurringTransactions = ({ recurringTransactions, onUpdate, accounts, onCl
             </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >

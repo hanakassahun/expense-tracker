@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { X, Download, Upload, Database, FileText, Trash2, AlertTriangle, CheckCircle } from 'lucide-react'
 
-const DataManager = ({ transactions, onImport, onClose, formatCurrency }) => {
+const DataManager = ({ transactions, onImport, onClose, formatCurrency, isOpen = false }) => {
   const [activeTab, setActiveTab] = useState('export')
   const [importData, setImportData] = useState('')
   const [importError, setImportError] = useState('')
@@ -143,6 +143,28 @@ const DataManager = ({ transactions, onImport, onClose, formatCurrency }) => {
 
   const stats = getDataStats()
 
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return undefined
+    }
+
+    if (!isOpen) {
+      document.body.style.overflow = 'unset'
+      return undefined
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow || 'unset'
+    }
+  }, [isOpen])
+
+  if (!isOpen) {
+    return null
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -169,6 +191,7 @@ const DataManager = ({ transactions, onImport, onClose, formatCurrency }) => {
             </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >

@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { X, Plus, Target, DollarSign, Calendar, Edit, Trash2, TrendingUp } from 'lucide-react'
 
-const SavingsGoals = ({ goals, onUpdate, onClose, formatCurrency }) => {
+const SavingsGoals = ({ goals, onUpdate, onClose, formatCurrency, isOpen = false }) => {
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [formData, setFormData] = useState({
@@ -108,6 +108,28 @@ const SavingsGoals = ({ goals, onUpdate, onClose, formatCurrency }) => {
     return 'On Track'
   }
 
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return undefined
+    }
+
+    if (!isOpen) {
+      document.body.style.overflow = 'unset'
+      return undefined
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow || 'unset'
+    }
+  }, [isOpen])
+
+  if (!isOpen) {
+    return null
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -134,6 +156,7 @@ const SavingsGoals = ({ goals, onUpdate, onClose, formatCurrency }) => {
             </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
